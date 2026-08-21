@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#efeee8" />
+    <title>Mom-Baby · MVP 交互原型</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="prototype-shell">
+      <aside class="review-rail" aria-label="原型流程导航">
+        <div class="rail-brand">
+          <div class="brand-mark" aria-hidden="true">M</div>
+          <div>
+            <strong>Mom-Baby</strong>
+            <span>MVP 原型 · v0.3</span>
+          </div>
+        </div>
+
+        <div class="rail-intro">
+          <span class="eyebrow">评审模式</span>
+          <h1>把照护事实，安静地记下来</h1>
+          <p>点击下列节点可跳转；建议先按编号完整走一遍关键旅程。</p>
+        </div>
+
+        <nav class="flow-map" id="flow-map">
+          <section>
+            <p>01 · 首次使用</p>
+            <button data-jump="welcome">欢迎</button>
+            <button data-jump="consent">监护人同意</button>
+            <button data-jump="baby-profile">宝宝建档</button>
+            <button data-jump="module-select">模块选择</button>
+          </section>
+          <section>
+            <p>02 · 每日记录</p>
+            <button data-jump="home">今日首页</button>
+            <button data-jump="nursing-start">亲喂计时</button>
+            <button data-jump="pump-start">双边吸奶</button>
+            <button data-jump="bottle-feed">配方奶瓶喂</button>
+            <button data-jump="diaper-add">尿布快记</button>
+          </section>
+          <section>
+            <p>03 · 成长记忆</p>
+            <button data-jump="growth">成长趋势</button>
+            <button data-jump="growth-add">新增测量</button>
+            <button data-jump="album">成长相册</button>
+            <button data-jump="history">全部历史</button>
+          </section>
+          <section>
+            <p>04 · 档案管理</p>
+            <button data-jump="me">我的</button>
+            <button data-jump="supplies">用品档案</button>
+          </section>
+        </nav>
+
+        <div class="rail-footer">
+          <a href="./board.html">打开 Figma 设计板</a>
+          <button data-action="reset-prototype">重置原型数据</button>
+        </div>
+      </aside>
+
+      <main class="phone-stage">
+        <div class="device-label"><span></span> 交互原型 · 390 × 844</div>
+        <div class="phone-frame" aria-label="Mom-Baby iPhone 原型">
+          <div id="app" class="app-root"></div>
+          <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        </div>
+        <p class="stage-hint">在手机画板内点击操作；键盘按 <kbd>R</kbd> 可回到欢迎页</p>
+      </main>
+    </div>
+    <noscript>此交互原型需要启用 JavaScript。</noscript>
+    <script src="./app.js"></script>
+  </body>
+</html>
