@@ -1,0 +1,373 @@
+{
+  "registry_version": 1,
+  "format_major": 1,
+  "format_minor": 0,
+  "logical_schema_version": 1,
+  "record_encoding": "jcs-rfc8785-jsonl-lf-v1",
+  "feature_profiles": [
+    {
+      "format_minor": 0,
+      "feature_flags": [],
+      "logical_schema_version": 1
+    }
+  ],
+  "object_id_namespace_uuid": "db62f5ab-6d04-53cf-a0c9-46f44cf24e15",
+  "object_id_algorithm": {
+    "column_uuid": "Use the lowercase UUID stored in the named SQLite column.",
+    "uuid_v5": "RFC 9562 UUIDv5 over UTF-8 name_template after substituting lowercase UUID or registry-enum components; no Unicode normalization is applied."
+  },
+  "entity_kinds": [
+    {
+      "ordinal": 1,
+      "entity_kind": "growth_standard_version",
+      "entity_schema_version": 1,
+      "source_table": "growth_standard_version",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "growth_standard",
+      "references": []
+    },
+    {
+      "ordinal": 2,
+      "entity_kind": "baby_profile",
+      "entity_schema_version": 1,
+      "source_table": "baby_profile",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "baby_avatar_cycle",
+      "references": [
+        { "field": "avatar_asset_id", "target_kind": "media_asset", "nullable": true }
+      ]
+    },
+    {
+      "ordinal": 3,
+      "entity_kind": "lactating_profile",
+      "entity_schema_version": 1,
+      "source_table": "lactating_profile",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "adult_profile",
+      "references": []
+    },
+    {
+      "ordinal": 4,
+      "entity_kind": "consent_record",
+      "entity_schema_version": 1,
+      "source_table": "consent_record",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "historical_consent",
+      "references": [
+        { "field": "baby_id", "target_kind": "baby_profile", "nullable": true, "condition": "subject_type == child" },
+        { "field": "lactating_profile_id", "target_kind": "lactating_profile", "nullable": true, "condition": "subject_type == adult" }
+      ]
+    },
+    {
+      "ordinal": 5,
+      "entity_kind": "module_preference",
+      "entity_schema_version": 1,
+      "source_table": "module_preference",
+      "object_id": { "strategy": "uuid_v5", "name_template": "module_preference/{module_type}" },
+      "load_group": "preferences",
+      "references": []
+    },
+    {
+      "ordinal": 6,
+      "entity_kind": "timer_session",
+      "entity_schema_version": 1,
+      "source_table": "timer_session",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "timer_fact_cycles",
+      "references": [
+        { "field": "baby_id", "target_kind": "baby_profile", "nullable": true },
+        { "field": "lactating_profile_id", "target_kind": "lactating_profile", "nullable": true },
+        { "field": "final_care_event_id", "target_kind": "care_event", "nullable": true },
+        { "field": "final_pumping_record_id", "target_kind": "pumping_record", "nullable": true }
+      ]
+    },
+    {
+      "ordinal": 7,
+      "entity_kind": "timer_channel",
+      "entity_schema_version": 1,
+      "source_table": "timer_channel",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "timer_children",
+      "references": [
+        { "field": "session_id", "target_kind": "timer_session", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 8,
+      "entity_kind": "timer_segment",
+      "entity_schema_version": 1,
+      "source_table": "timer_segment",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "timer_children",
+      "references": [
+        { "field": "channel_id", "target_kind": "timer_channel", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 9,
+      "entity_kind": "care_event",
+      "entity_schema_version": 1,
+      "source_table": "care_event",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "timer_fact_cycles",
+      "references": [
+        { "field": "baby_id", "target_kind": "baby_profile", "nullable": false },
+        { "field": "source_timer_session_id", "target_kind": "timer_session", "nullable": true }
+      ]
+    },
+    {
+      "ordinal": 10,
+      "entity_kind": "feeding_detail",
+      "entity_schema_version": 1,
+      "source_table": "feeding_detail",
+      "object_id": { "strategy": "uuid_v5", "name_template": "feeding_detail/{event_id}" },
+      "load_group": "care_details",
+      "references": [
+        { "field": "event_id", "target_kind": "care_event", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 11,
+      "entity_kind": "diaper_detail",
+      "entity_schema_version": 1,
+      "source_table": "diaper_detail",
+      "object_id": { "strategy": "uuid_v5", "name_template": "diaper_detail/{event_id}" },
+      "load_group": "care_details",
+      "references": [
+        { "field": "event_id", "target_kind": "care_event", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 12,
+      "entity_kind": "nursing_side_detail",
+      "entity_schema_version": 1,
+      "source_table": "nursing_side_detail",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "timer_fact_cycles",
+      "references": [
+        { "field": "related_event_id", "target_kind": "care_event", "nullable": true },
+        { "field": "lactating_profile_id", "target_kind": "lactating_profile", "nullable": false },
+        { "field": "timer_session_id", "target_kind": "timer_session", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 13,
+      "entity_kind": "pumping_record",
+      "entity_schema_version": 1,
+      "source_table": "pumping_record",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "timer_fact_cycles",
+      "references": [
+        { "field": "lactating_profile_id", "target_kind": "lactating_profile", "nullable": false },
+        { "field": "related_baby_id", "target_kind": "baby_profile", "nullable": true },
+        { "field": "timer_session_id", "target_kind": "timer_session", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 14,
+      "entity_kind": "growth_record",
+      "entity_schema_version": 1,
+      "source_table": "growth_record",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "baby_facts",
+      "references": [
+        { "field": "baby_id", "target_kind": "baby_profile", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 15,
+      "entity_kind": "formula_product",
+      "entity_schema_version": 1,
+      "source_table": "formula_product",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "formula_product_cycle",
+      "references": [
+        { "field": "baby_id", "target_kind": "baby_profile", "nullable": false },
+        { "field": "current_version_id", "target_kind": "formula_product_version", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 16,
+      "entity_kind": "formula_product_version",
+      "entity_schema_version": 1,
+      "source_table": "formula_product_version",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "formula_product_cycle",
+      "references": [
+        { "field": "product_id", "target_kind": "formula_product", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 17,
+      "entity_kind": "formula_container",
+      "entity_schema_version": 1,
+      "source_table": "formula_container",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "formula_container_cycle",
+      "references": [
+        { "field": "product_id", "target_kind": "formula_product", "nullable": false },
+        { "field": "current_version_id", "target_kind": "formula_container_version", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 18,
+      "entity_kind": "formula_container_version",
+      "entity_schema_version": 1,
+      "source_table": "formula_container_version",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "formula_container_cycle",
+      "references": [
+        { "field": "container_id", "target_kind": "formula_container", "nullable": false },
+        { "field": "product_version_id", "target_kind": "formula_product_version", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 19,
+      "entity_kind": "bottle_item",
+      "entity_schema_version": 1,
+      "source_table": "bottle_item",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "bottle_identity_cycle",
+      "references": [
+        { "field": "baby_id", "target_kind": "baby_profile", "nullable": false },
+        { "field": "current_version_id", "target_kind": "bottle_identity_version", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 20,
+      "entity_kind": "bottle_identity_version",
+      "entity_schema_version": 1,
+      "source_table": "bottle_identity_version",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "bottle_identity_cycle",
+      "references": [
+        { "field": "bottle_id", "target_kind": "bottle_item", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 21,
+      "entity_kind": "media_asset",
+      "entity_schema_version": 1,
+      "source_table": "media_asset",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "baby_avatar_cycle",
+      "references": [
+        { "field": "baby_id", "target_kind": "baby_profile", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 22,
+      "entity_kind": "moment",
+      "entity_schema_version": 1,
+      "source_table": "moment",
+      "object_id": { "strategy": "column_uuid", "column": "id" },
+      "load_group": "moments",
+      "references": [
+        { "field": "baby_id", "target_kind": "baby_profile", "nullable": false },
+        { "field": "derived_from_moment_id", "target_kind": "moment", "nullable": true, "must_form_dag": true }
+      ]
+    },
+    {
+      "ordinal": 23,
+      "entity_kind": "moment_asset",
+      "entity_schema_version": 1,
+      "source_table": "moment_asset",
+      "object_id": { "strategy": "uuid_v5", "name_template": "moment_asset/{moment_id}/{asset_id}" },
+      "load_group": "media_links",
+      "references": [
+        { "field": "moment_id", "target_kind": "moment", "nullable": false },
+        { "field": "asset_id", "target_kind": "media_asset", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 24,
+      "entity_kind": "formula_evidence",
+      "entity_schema_version": 1,
+      "source_table": "formula_evidence",
+      "object_id": { "strategy": "uuid_v5", "name_template": "formula_evidence/{container_version_id}/{asset_id}" },
+      "load_group": "media_links",
+      "references": [
+        { "field": "container_version_id", "target_kind": "formula_container_version", "nullable": false },
+        { "field": "asset_id", "target_kind": "media_asset", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 25,
+      "entity_kind": "bottle_evidence",
+      "entity_schema_version": 1,
+      "source_table": "bottle_evidence",
+      "object_id": { "strategy": "uuid_v5", "name_template": "bottle_evidence/{bottle_version_id}/{asset_id}" },
+      "load_group": "media_links",
+      "references": [
+        { "field": "bottle_version_id", "target_kind": "bottle_identity_version", "nullable": false },
+        { "field": "asset_id", "target_kind": "media_asset", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 26,
+      "entity_kind": "formula_use",
+      "entity_schema_version": 1,
+      "source_table": "formula_use",
+      "object_id": { "strategy": "uuid_v5", "name_template": "formula_use/{feeding_event_id}/{container_version_id}" },
+      "load_group": "supply_uses",
+      "references": [
+        { "field": "feeding_event_id", "target_kind": "care_event", "nullable": false },
+        { "field": "container_version_id", "target_kind": "formula_container_version", "nullable": false }
+      ]
+    },
+    {
+      "ordinal": 27,
+      "entity_kind": "bottle_use",
+      "entity_schema_version": 1,
+      "source_table": "bottle_use",
+      "object_id": { "strategy": "uuid_v5", "name_template": "bottle_use/{feeding_event_id}" },
+      "load_group": "supply_uses",
+      "references": [
+        { "field": "feeding_event_id", "target_kind": "care_event", "nullable": false },
+        { "field": "bottle_version_id", "target_kind": "bottle_identity_version", "nullable": false }
+      ]
+    }
+  ],
+  "allowed_strongly_connected_components": [
+    {
+      "name": "baby_avatar_cycle",
+      "entity_kinds": ["baby_profile", "media_asset"],
+      "edges": ["baby_profile.avatar_asset_id->media_asset", "media_asset.baby_id->baby_profile"]
+    },
+    {
+      "name": "timer_care_cycle",
+      "entity_kinds": ["timer_session", "care_event"],
+      "edges": ["timer_session.final_care_event_id->care_event", "care_event.source_timer_session_id->timer_session"]
+    },
+    {
+      "name": "timer_pumping_cycle",
+      "entity_kinds": ["timer_session", "pumping_record"],
+      "edges": ["timer_session.final_pumping_record_id->pumping_record", "pumping_record.timer_session_id->timer_session"]
+    },
+    {
+      "name": "formula_product_cycle",
+      "entity_kinds": ["formula_product", "formula_product_version"],
+      "edges": ["formula_product.current_version_id->formula_product_version", "formula_product_version.product_id->formula_product"]
+    },
+    {
+      "name": "formula_container_cycle",
+      "entity_kinds": ["formula_container", "formula_container_version"],
+      "edges": ["formula_container.current_version_id->formula_container_version", "formula_container_version.container_id->formula_container"]
+    },
+    {
+      "name": "bottle_identity_cycle",
+      "entity_kinds": ["bottle_item", "bottle_identity_version"],
+      "edges": ["bottle_item.current_version_id->bottle_identity_version", "bottle_identity_version.bottle_id->bottle_item"]
+    }
+  ],
+  "semantic_validation": {
+    "unknown_entity_kind": "reject_archive",
+    "unknown_entity_schema_version": "reject_archive",
+    "duplicate_object_id_scope": "entire_archive",
+    "unresolved_non_null_reference": "reject_archive",
+    "undeclared_cycle": "reject_archive",
+    "historical_consent_grants_access": false,
+    "detached_adult_nursing": "A finished or abandoned nursing timer_session may have baby_id null only when baby_context_detached_at_ms is non-null; final_care_event_id and nursing_side_detail.related_event_id must then be null while the adult session, channels, segments and nursing_side_detail remain.",
+    "record_order": "entity ordinal ascending, then object_id ASCII ascending"
+  }
+}

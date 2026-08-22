@@ -1,0 +1,937 @@
+{
+  "mapping_version": 1,
+  "source_contract": "docs/MVP-IOS-TECHNICAL-DESIGN.md Appendix A, P0-L v1 SQLite DDL",
+  "logical_schema_version": 1,
+  "expected_table_count": 44,
+  "logical_record_table_count": 27,
+  "media_projection_table_count": 1,
+  "excluded_table_count": 16,
+  "role_vocabulary": {
+    "object_id": "Preserved lowercase UUID placed in record.object_id.",
+    "payload": "Copied into the exact entity payload.",
+    "payload_boolean": "SQLite INTEGER 0/1 converted to JSON boolean.",
+    "payload_object_id_component": "Copied into payload and used in deterministic UUIDv5 object_id.",
+    "payload_restore_after_media": "Serialized as payload, but restore inserts the owning profile with this nullable pointer cleared, installs and verifies the referenced media graph, then applies the archived pointer in the same deferred transaction.",
+    "payload_restore_via_finalizing": "Serialized as payload, but restore first inserts timer_session as finalizing with null final pointers, installs its child/final fact graph, then applies the archived terminal state and final pointers in the deferred transaction.",
+    "restore_new_vault": "Not exported; mapped to the staging restore vault.",
+    "restore_new_actor": "Not exported; mapped to the staging restore actor.",
+    "restore_new_actor_by_subject": "Not exported; guardian/adult actor column populated from subject_type.",
+    "restore_new_current_consent": "Not exported; recovery onboarding creates and points to a new current consent.",
+    "restore_new_installation": "Not exported; populated with the new device_installation.",
+    "restore_generated_uuid_v5": "Not exported; deterministically regenerated for idempotent import.",
+    "restore_generated_nullable_uuid_v5": "Not exported; regenerated only when the logical terminal field is non-null.",
+    "restore_constant_1": "Installation-local revision reset to 1.",
+    "restore_recompute_from_segments": "Derived cache recomputed and verified from imported timer segments.",
+    "restore_reconcile_bundled_resource": "Importer verifies code/version/hash against a bundled resource and uses the current installation timestamp.",
+    "export_filter_null_restore_null": "Only rows with NULL are exported; restored value remains NULL.",
+    "media_manifest": "Projected into encrypted manifest/media verification metadata.",
+    "media_payload_source": "Used only to open and hash the pinned media bytes; never serialized.",
+    "media_export_precondition": "Must satisfy the named local readiness/protection condition; never serialized.",
+    "excluded": "Never serialized or used to restore product data."
+  },
+  "tables": {
+    "active_resource_lock": {
+      "classification": "excluded",
+      "reason": "rebuildable runtime lock",
+      "columns": {
+        "id": "excluded",
+        "lock_kind": "excluded",
+        "baby_id": "excluded",
+        "lactating_profile_id": "excluded",
+        "side": "excluded",
+        "session_id": "excluded",
+        "channel_id": "excluded",
+        "acquired_at_ms": "excluded"
+      }
+    },
+    "app_setting": {
+      "classification": "excluded",
+      "reason": "v1 contains only device/security acknowledgements; no business-key registry is frozen",
+      "columns": {
+        "local_vault_id": "excluded",
+        "setting_key": "excluded",
+        "value_json": "excluded",
+        "updated_at_ms": "excluded"
+      }
+    },
+    "archive_export_session": {
+      "classification": "excluded",
+      "reason": "archive worker journal",
+      "columns": {
+        "id": "excluded",
+        "local_vault_id": "excluded",
+        "state": "excluded",
+        "snapshot_data_revision": "excluded",
+        "staging_relative_path": "excluded",
+        "destination_kind": "excluded",
+        "manifest_sha256": "excluded",
+        "emission_epoch": "excluded",
+        "archive_id": "excluded",
+        "last_complete_sequence": "excluded",
+        "checkpoint_byte_offset": "excluded",
+        "checkpoint_prefix_sha256": "excluded",
+        "output_sha256": "excluded",
+        "operation_epoch": "excluded",
+        "claim_id": "excluded",
+        "heartbeat_at_ms": "excluded",
+        "claim_expires_at_ms": "excluded",
+        "created_at_ms": "excluded",
+        "updated_at_ms": "excluded",
+        "completed_at_ms": "excluded"
+      }
+    },
+    "archive_media_pin": {
+      "classification": "excluded",
+      "reason": "archive worker pin",
+      "columns": {
+        "export_session_id": "excluded",
+        "asset_id": "excluded",
+        "variant": "excluded",
+        "expected_sha256": "excluded",
+        "created_at_ms": "excluded"
+      }
+    },
+    "baby_profile": {
+      "classification": "logical_record",
+      "entity_kind": "baby_profile",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "local_vault_id": "restore_new_vault",
+        "nickname": "payload",
+        "birth_local_date": "payload",
+        "growth_group": "payload",
+        "home_time_zone": "payload",
+        "grouping_generation": "payload",
+        "avatar_asset_id": "payload_restore_after_media",
+        "current_consent_id": "restore_new_current_consent",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "bottle_evidence": {
+      "classification": "logical_record",
+      "entity_kind": "bottle_evidence",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "uuid_v5",
+        "namespace_uuid": "db62f5ab-6d04-53cf-a0c9-46f44cf24e15",
+        "components": [
+          "bottle_version_id",
+          "asset_id"
+        ]
+      },
+      "columns": {
+        "bottle_version_id": "payload_object_id_component",
+        "asset_id": "payload_object_id_component",
+        "evidence_type": "payload",
+        "capture_source": "payload",
+        "user_confirmed_at_ms": "payload"
+      }
+    },
+    "bottle_identity_version": {
+      "classification": "logical_record",
+      "entity_kind": "bottle_identity_version",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "bottle_id": "payload",
+        "version": "payload",
+        "nickname": "payload",
+        "brand": "payload",
+        "manufacturer": "payload",
+        "model": "payload",
+        "capacity_ml": "payload",
+        "material": "payload",
+        "nipple_spec": "payload",
+        "gtin": "payload",
+        "lot_or_serial": "payload",
+        "manufactured_local_date": "payload",
+        "verification_status": "payload",
+        "content_sha256": "payload",
+        "created_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor"
+      }
+    },
+    "bottle_item": {
+      "classification": "logical_record",
+      "entity_kind": "bottle_item",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "baby_id": "payload",
+        "current_version_id": "payload",
+        "status": "payload",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "bottle_use": {
+      "classification": "logical_record",
+      "entity_kind": "bottle_use",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "uuid_v5",
+        "namespace_uuid": "db62f5ab-6d04-53cf-a0c9-46f44cf24e15",
+        "components": [
+          "feeding_event_id"
+        ]
+      },
+      "columns": {
+        "feeding_event_id": "payload_object_id_component",
+        "bottle_version_id": "payload"
+      }
+    },
+    "care_event": {
+      "classification": "logical_record",
+      "entity_kind": "care_event",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "baby_id": "payload",
+        "type": "payload",
+        "occurred_at_ms": "payload",
+        "ended_at_ms": "payload",
+        "event_time_zone": "payload",
+        "event_utc_offset_seconds": "payload",
+        "ended_utc_offset_seconds": "payload",
+        "group_local_date": "payload",
+        "note": "payload",
+        "source_timer_session_id": "payload",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "consent_record": {
+      "classification": "logical_record",
+      "entity_kind": "consent_record",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "local_vault_id": "restore_new_vault",
+        "subject_type": "payload",
+        "baby_id": "payload",
+        "lactating_profile_id": "payload",
+        "guardian_actor_id": "restore_new_actor_by_subject",
+        "adult_actor_id": "restore_new_actor_by_subject",
+        "policy_version": "payload",
+        "scope_json": "payload",
+        "notice_sha256": "payload",
+        "granted_at_ms": "payload",
+        "withdrawn_at_ms": "payload"
+      }
+    },
+    "device_installation": {
+      "classification": "excluded",
+      "reason": "installation identity and restore sentinel metadata",
+      "columns": {
+        "id": "excluded",
+        "local_vault_id": "excluded",
+        "state": "excluded",
+        "schema_version": "excluded",
+        "media_layout_version": "excluded",
+        "schema_fingerprint": "excluded",
+        "restore_sentinel_hash": "excluded",
+        "backup_policy_generation": "excluded",
+        "created_at_ms": "excluded",
+        "replaced_at_ms": "excluded"
+      }
+    },
+    "diaper_detail": {
+      "classification": "logical_record",
+      "entity_kind": "diaper_detail",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "uuid_v5",
+        "namespace_uuid": "db62f5ab-6d04-53cf-a0c9-46f44cf24e15",
+        "components": [
+          "event_id"
+        ]
+      },
+      "columns": {
+        "event_id": "payload_object_id_component",
+        "diaper_type": "payload"
+      }
+    },
+    "feeding_detail": {
+      "classification": "logical_record",
+      "entity_kind": "feeding_detail",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "uuid_v5",
+        "namespace_uuid": "db62f5ab-6d04-53cf-a0c9-46f44cf24e15",
+        "components": [
+          "event_id"
+        ]
+      },
+      "columns": {
+        "event_id": "payload_object_id_component",
+        "mode": "payload",
+        "milk_type": "payload",
+        "nursing_total_seconds": "payload",
+        "amount_ml": "payload"
+      }
+    },
+    "formula_container": {
+      "classification": "logical_record",
+      "entity_kind": "formula_container",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "product_id": "payload",
+        "current_version_id": "payload",
+        "opened_at_ms": "payload",
+        "status": "payload",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "formula_container_version": {
+      "classification": "logical_record",
+      "entity_kind": "formula_container_version",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "container_id": "payload",
+        "version": "payload",
+        "product_version_id": "payload",
+        "lot_number_raw": "payload",
+        "produced_local_date": "payload",
+        "expires_local_date": "payload",
+        "printed_date_raw": "payload",
+        "purchased_local_date": "payload",
+        "seller_or_channel": "payload",
+        "trace_provider": "payload",
+        "enterprise_code": "payload",
+        "code_symbology": "payload",
+        "trace_code_raw": "payload",
+        "trace_code_normalized": "payload",
+        "verification_status": "payload",
+        "content_sha256": "payload",
+        "created_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor"
+      }
+    },
+    "formula_evidence": {
+      "classification": "logical_record",
+      "entity_kind": "formula_evidence",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "uuid_v5",
+        "namespace_uuid": "db62f5ab-6d04-53cf-a0c9-46f44cf24e15",
+        "components": [
+          "container_version_id",
+          "asset_id"
+        ]
+      },
+      "columns": {
+        "container_version_id": "payload_object_id_component",
+        "asset_id": "payload_object_id_component",
+        "evidence_type": "payload",
+        "capture_source": "payload",
+        "ocr_confidence": "payload",
+        "user_confirmed_at_ms": "payload"
+      }
+    },
+    "formula_product": {
+      "classification": "logical_record",
+      "entity_kind": "formula_product",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "baby_id": "payload",
+        "current_version_id": "payload",
+        "status": "payload",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "formula_product_version": {
+      "classification": "logical_record",
+      "entity_kind": "formula_product_version",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "product_id": "payload",
+        "version": "payload",
+        "brand": "payload",
+        "product_name": "payload",
+        "stage_or_age": "payload",
+        "specification": "payload",
+        "manufacturer": "payload",
+        "origin_country": "payload",
+        "importer": "payload",
+        "formula_registration_no": "payload",
+        "gtin": "payload",
+        "content_sha256": "payload",
+        "created_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor"
+      }
+    },
+    "formula_use": {
+      "classification": "logical_record",
+      "entity_kind": "formula_use",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "uuid_v5",
+        "namespace_uuid": "db62f5ab-6d04-53cf-a0c9-46f44cf24e15",
+        "components": [
+          "feeding_event_id",
+          "container_version_id"
+        ]
+      },
+      "columns": {
+        "feeding_event_id": "payload_object_id_component",
+        "container_version_id": "payload_object_id_component",
+        "contribution_ml": "payload",
+        "contribution_known": "payload_boolean"
+      }
+    },
+    "growth_record": {
+      "classification": "logical_record",
+      "entity_kind": "growth_record",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "baby_id": "payload",
+        "measured_local_date": "payload",
+        "measurement_type": "payload",
+        "weight_grams": "payload",
+        "length_mm": "payload",
+        "note": "payload",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "growth_standard_version": {
+      "classification": "logical_record",
+      "entity_kind": "growth_standard_version",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "standard_code": "payload",
+        "version": "payload",
+        "source_url": "payload",
+        "resource_sha256": "payload",
+        "is_active": "payload_boolean",
+        "installed_at_ms": "restore_reconcile_bundled_resource"
+      }
+    },
+    "lactating_profile": {
+      "classification": "logical_record",
+      "entity_kind": "lactating_profile",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "local_vault_id": "restore_new_vault",
+        "owner_actor_id": "restore_new_actor",
+        "home_time_zone": "payload",
+        "grouping_generation": "payload",
+        "current_consent_id": "restore_new_current_consent",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "local_actor": {
+      "classification": "excluded",
+      "reason": "restored as the new installation's single trusted adult",
+      "columns": {
+        "id": "excluded",
+        "local_vault_id": "excluded",
+        "trust_model": "excluded",
+        "guardian_declared": "excluded",
+        "created_at_ms": "excluded",
+        "updated_at_ms": "excluded"
+      }
+    },
+    "local_media_replica": {
+      "classification": "media_manifest_projection",
+      "row_selection": "exact required purpose/variant replica; state = ready; protection_verified = 1; pinned size and SHA-256 must match",
+      "excluded_from_records": true,
+      "columns": {
+        "asset_id": "media_manifest",
+        "variant": "media_manifest",
+        "relative_path": "media_payload_source",
+        "mime_type": "media_manifest",
+        "width_px": "media_manifest",
+        "height_px": "media_manifest",
+        "byte_size": "media_manifest",
+        "sha256": "media_manifest",
+        "state": "media_export_precondition",
+        "protection_verified": "media_export_precondition",
+        "backup_policy_generation": "excluded",
+        "created_at_ms": "excluded",
+        "updated_at_ms": "excluded"
+      }
+    },
+    "local_vault": {
+      "classification": "excluded",
+      "reason": "restored as a new vault root",
+      "columns": {
+        "id": "excluded",
+        "singleton_slot": "excluded",
+        "state": "excluded",
+        "data_revision": "excluded",
+        "created_at_ms": "excluded",
+        "updated_at_ms": "excluded"
+      }
+    },
+    "maintenance_checkpoint": {
+      "classification": "excluded",
+      "reason": "rebuildable worker checkpoint",
+      "columns": {
+        "task_name": "excluded",
+        "cursor_json": "excluded",
+        "lease_owner": "excluded",
+        "lease_expires_at_ms": "excluded",
+        "last_started_at_ms": "excluded",
+        "last_completed_at_ms": "excluded",
+        "last_error_group": "excluded"
+      }
+    },
+    "media_asset": {
+      "classification": "logical_record",
+      "entity_kind": "media_asset",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "baby_id": "payload",
+        "purpose": "payload",
+        "captured_at_ms": "payload",
+        "captured_time_zone": "payload",
+        "captured_utc_offset_seconds": "payload",
+        "captured_baby_local_date": "payload",
+        "source_kind": "payload",
+        "metadata_confidence": "payload",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "media_import_item": {
+      "classification": "excluded",
+      "reason": "media import worker journal",
+      "columns": {
+        "id": "excluded",
+        "job_id": "excluded",
+        "ordinal": "excluded",
+        "asset_id": "excluded",
+        "state": "excluded",
+        "source_relative_path": "excluded",
+        "staging_manifest_json": "excluded",
+        "input_byte_size": "excluded",
+        "sniffed_mime_type": "excluded",
+        "source_sha256": "excluded",
+        "width_px": "excluded",
+        "height_px": "excluded",
+        "frame_count": "excluded",
+        "output_manifest_json": "excluded",
+        "operation_epoch": "excluded",
+        "claim_id": "excluded",
+        "heartbeat_at_ms": "excluded",
+        "claim_expires_at_ms": "excluded",
+        "error_group": "excluded",
+        "created_at_ms": "excluded",
+        "updated_at_ms": "excluded"
+      }
+    },
+    "media_import_job": {
+      "classification": "excluded",
+      "reason": "media import worker journal",
+      "columns": {
+        "id": "excluded",
+        "local_vault_id": "excluded",
+        "baby_id": "excluded",
+        "purpose": "excluded",
+        "state": "excluded",
+        "desired_action": "excluded",
+        "item_count": "excluded",
+        "form_draft_json": "excluded",
+        "operation_epoch": "excluded",
+        "claim_id": "excluded",
+        "heartbeat_at_ms": "excluded",
+        "claim_expires_at_ms": "excluded",
+        "error_group": "excluded",
+        "created_at_ms": "excluded",
+        "updated_at_ms": "excluded",
+        "expires_at_ms": "excluded"
+      }
+    },
+    "migration_file_item": {
+      "classification": "excluded",
+      "reason": "migration worker journal",
+      "columns": {
+        "id": "excluded",
+        "migration_id": "excluded",
+        "source_relative_path": "excluded",
+        "target_relative_path": "excluded",
+        "expected_sha256": "excluded",
+        "state": "excluded",
+        "operation_epoch": "excluded",
+        "claim_id": "excluded",
+        "updated_at_ms": "excluded"
+      }
+    },
+    "migration_journal": {
+      "classification": "excluded",
+      "reason": "migration worker journal",
+      "columns": {
+        "id": "excluded",
+        "local_vault_id": "excluded",
+        "from_schema_version": "excluded",
+        "to_schema_version": "excluded",
+        "from_media_layout_version": "excluded",
+        "to_media_layout_version": "excluded",
+        "state": "excluded",
+        "snapshot_relative_path": "excluded",
+        "snapshot_sha256": "excluded",
+        "required_free_bytes": "excluded",
+        "operation_epoch": "excluded",
+        "claim_id": "excluded",
+        "error_group": "excluded",
+        "created_at_ms": "excluded",
+        "updated_at_ms": "excluded",
+        "completed_at_ms": "excluded"
+      }
+    },
+    "module_preference": {
+      "classification": "logical_record",
+      "entity_kind": "module_preference",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "uuid_v5",
+        "namespace_uuid": "db62f5ab-6d04-53cf-a0c9-46f44cf24e15",
+        "components": [
+          "module_type"
+        ]
+      },
+      "columns": {
+        "local_vault_id": "restore_new_vault",
+        "module_type": "payload_object_id_component",
+        "is_enabled": "payload_boolean",
+        "home_position": "payload",
+        "updated_at_ms": "payload"
+      }
+    },
+    "moment": {
+      "classification": "logical_record",
+      "entity_kind": "moment",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "baby_id": "payload",
+        "group_local_date": "payload",
+        "occurred_at_ms": "payload",
+        "caption": "payload",
+        "derived_from_moment_id": "payload",
+        "grouping_generation": "payload",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "moment_asset": {
+      "classification": "logical_record",
+      "entity_kind": "moment_asset",
+      "row_selection": "referential closure of exported logical owners",
+      "object_id": {
+        "strategy": "uuid_v5",
+        "namespace_uuid": "db62f5ab-6d04-53cf-a0c9-46f44cf24e15",
+        "components": [
+          "moment_id",
+          "asset_id"
+        ]
+      },
+      "columns": {
+        "moment_id": "payload_object_id_component",
+        "asset_id": "payload_object_id_component",
+        "display_order": "payload"
+      }
+    },
+    "nursing_side_detail": {
+      "classification": "logical_record",
+      "entity_kind": "nursing_side_detail",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "related_event_id": "payload",
+        "lactating_profile_id": "payload",
+        "timer_session_id": "payload",
+        "left_seconds_cache": "payload",
+        "right_seconds_cache": "payload",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "operation_ledger": {
+      "classification": "excluded",
+      "reason": "idempotency and operation runtime metadata",
+      "columns": {
+        "command_id": "excluded",
+        "local_vault_id": "excluded",
+        "operation_type": "excluded",
+        "target_type": "excluded",
+        "target_id": "excluded",
+        "expected_revision": "excluded",
+        "input_sha256": "excluded",
+        "state": "excluded",
+        "result_type": "excluded",
+        "result_id": "excluded",
+        "result_revision": "excluded",
+        "error_group": "excluded",
+        "created_at_ms": "excluded",
+        "completed_at_ms": "excluded"
+      }
+    },
+    "pending_purge": {
+      "classification": "excluded",
+      "reason": "purge/undo worker journal; active purge blocks export",
+      "columns": {
+        "id": "excluded",
+        "local_vault_id": "excluded",
+        "entity_type": "excluded",
+        "entity_id": "excluded",
+        "state": "excluded",
+        "desired_action": "excluded",
+        "state_revision": "excluded",
+        "intent_revision": "excluded",
+        "relation_ids_json": "excluded",
+        "undo_deadline_ms": "excluded",
+        "created_at_ms": "excluded",
+        "updated_at_ms": "excluded"
+      }
+    },
+    "pending_purge_file": {
+      "classification": "excluded",
+      "reason": "purge file worker journal and paths",
+      "columns": {
+        "id": "excluded",
+        "purge_id": "excluded",
+        "media_asset_id": "excluded",
+        "source_relative_path": "excluded",
+        "trash_relative_path": "excluded",
+        "expected_sha256": "excluded",
+        "physical_phase": "excluded",
+        "operation_epoch": "excluded",
+        "claim_id": "excluded",
+        "updated_at_ms": "excluded"
+      }
+    },
+    "pumping_record": {
+      "classification": "logical_record",
+      "entity_kind": "pumping_record",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "lactating_profile_id": "payload",
+        "related_baby_id": "payload",
+        "related_baby_local_date": "payload",
+        "occurred_at_ms": "payload",
+        "ended_at_ms": "payload",
+        "event_time_zone": "payload",
+        "event_utc_offset_seconds": "payload",
+        "ended_utc_offset_seconds": "payload",
+        "pattern": "payload",
+        "left_ml": "payload",
+        "right_ml": "payload",
+        "total_ml": "payload",
+        "effective_seconds_cache": "payload",
+        "timer_session_id": "payload",
+        "note": "payload",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    },
+    "schema_metadata": {
+      "classification": "excluded",
+      "reason": "installation schema metadata",
+      "columns": {
+        "singleton_slot": "excluded",
+        "application_id": "excluded",
+        "schema_version": "excluded",
+        "media_layout_version": "excluded",
+        "schema_fingerprint": "excluded",
+        "installed_at_ms": "excluded"
+      }
+    },
+    "timer_channel": {
+      "classification": "logical_record",
+      "entity_kind": "timer_channel",
+      "row_selection": "referential closure of exported logical owners",
+      "export_transform": "Channels belonging to a non-terminal source session are materialized as abandoned; a finished session emits only ended or abandoned channels.",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "session_id": "payload",
+        "channel": "payload",
+        "is_selected": "payload_boolean",
+        "state": "payload",
+        "total_seconds_cache": "restore_recompute_from_segments",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload"
+      }
+    },
+    "timer_segment": {
+      "classification": "logical_record",
+      "entity_kind": "timer_segment",
+      "row_selection": "referential closure of exported logical owners",
+      "export_transform": "Every open source segment is closed at the persisted session last_activity_at_ms during snapshot materialization; archive ended_at_ms is always non-null.",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "channel_id": "payload",
+        "started_at_ms": "payload",
+        "ended_at_ms": "payload",
+        "start_command_id": "restore_generated_uuid_v5",
+        "end_command_id": "restore_generated_nullable_uuid_v5",
+        "created_at_ms": "payload"
+      }
+    },
+    "timer_session": {
+      "classification": "logical_record",
+      "entity_kind": "timer_session",
+      "row_selection": "deleted_at_ms IS NULL; active pending_purge blocks the complete archive snapshot",
+      "export_transform": "ready/running/paused/waiting_for_side/finalizing source sessions are materialized as abandoned with ended_at_ms = persisted last_activity_at_ms, clock_verification_state = wall_only_after_process_loss, and both final record IDs null; the source database is not mutated.",
+      "object_id": {
+        "strategy": "column_uuid",
+        "column": "id"
+      },
+      "columns": {
+        "id": "object_id",
+        "type": "payload",
+        "baby_id": "payload",
+        "baby_context_detached_at_ms": "payload",
+        "lactating_profile_id": "payload",
+        "selected_mode": "payload",
+        "state": "payload_restore_via_finalizing",
+        "clock_verification_state": "payload",
+        "started_at_ms": "payload",
+        "last_activity_at_ms": "payload",
+        "ended_at_ms": "payload",
+        "origin_device_installation_id": "restore_new_installation",
+        "start_command_id": "restore_generated_uuid_v5",
+        "finish_command_id": "restore_generated_nullable_uuid_v5",
+        "final_care_event_id": "payload_restore_via_finalizing",
+        "final_pumping_record_id": "payload_restore_via_finalizing",
+        "local_revision": "restore_constant_1",
+        "created_at_ms": "payload",
+        "updated_at_ms": "payload",
+        "created_by_actor_id": "restore_new_actor",
+        "updated_by_actor_id": "restore_new_actor",
+        "deleted_at_ms": "export_filter_null_restore_null"
+      }
+    }
+  }
+}

@@ -1,0 +1,3947 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mombaby:archive:v1",
+  "title": "Mom-Baby Archive v1 JSON Contracts",
+  "description": "Machine-readable contracts for the v1 public core, encrypted manifest, record JSONL object, media chunk header and completion object. Cross-record ordering, hashes, references, SCCs, frame arithmetic and byte limits are additionally enforced by the companion registry and importer verifier.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/core"
+    },
+    {
+      "$ref": "#/$defs/manifest"
+    },
+    {
+      "$ref": "#/$defs/record"
+    },
+    {
+      "$ref": "#/$defs/media_header"
+    },
+    {
+      "$ref": "#/$defs/completion"
+    }
+  ],
+  "$defs": {
+    "lowercase_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "nullable_uuid": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "positive_ms": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "nullable_positive_ms": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/positive_ms"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nonnegative_integer": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "nullable_nonnegative_integer": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/nonnegative_integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "date_only": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "x-requiresCalendarValidation": true
+    },
+    "nullable_date_only": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/date_only"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "time_zone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "x-requiresIanaTimeZoneValidation": true
+    },
+    "nullable_time_zone": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/time_zone"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "utc_offset_seconds": {
+      "type": "integer",
+      "minimum": -64800,
+      "maximum": 64800
+    },
+    "nullable_utc_offset_seconds": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/utc_offset_seconds"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "note": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 8192,
+          "x-maxUtf8Bytes": 8192
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullable_string_64k": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 65536,
+          "x-maxUtf8Bytes": 65536
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullable_string_8192": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 8192,
+          "x-maxUtf8Bytes": 8192
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullable_string_2048": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 2048,
+          "x-maxUtf8Bytes": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullable_string_1024": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1024,
+          "x-maxUtf8Bytes": 1024
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullable_string_512": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 512,
+          "x-maxUtf8Bytes": 512
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "kdf": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version",
+        "memory_kib",
+        "iterations",
+        "parallelism",
+        "salt_base64"
+      ],
+      "properties": {
+        "name": {
+          "const": "argon2id"
+        },
+        "version": {
+          "const": 19
+        },
+        "memory_kib": {
+          "type": "integer",
+          "minimum": 65536,
+          "maximum": 262144
+        },
+        "iterations": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 10
+        },
+        "parallelism": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "salt_base64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{43}=$",
+          "x-decodedByteLength": 32,
+          "x-requireCanonicalBase64": true
+        }
+      }
+    },
+    "data_cipher": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "frame_plaintext_max",
+        "nonce_prefix_base64"
+      ],
+      "properties": {
+        "name": {
+          "const": "aes-256-gcm"
+        },
+        "frame_plaintext_max": {
+          "const": 4194304
+        },
+        "nonce_prefix_base64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{6}==$",
+          "x-decodedByteLength": 4,
+          "x-requireCanonicalBase64": true
+        }
+      }
+    },
+    "core": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "archive_id",
+        "created_at_ms",
+        "logical_schema_version",
+        "kdf",
+        "data_cipher",
+        "feature_flags"
+      ],
+      "properties": {
+        "archive_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "logical_schema_version": {
+          "const": 1
+        },
+        "kdf": {
+          "$ref": "#/$defs/kdf"
+        },
+        "data_cipher": {
+          "$ref": "#/$defs/data_cipher"
+        },
+        "feature_flags": {
+          "type": "array",
+          "maxItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+          }
+        }
+      },
+      "$comment": "Core bytes are RFC 8785 JCS UTF-8 with no BOM. v1.0 feature_flags is exactly empty; a higher minor requires a new exact feature profile."
+    },
+    "record_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_kind",
+        "entity_schema_version",
+        "count",
+        "plaintext_byte_length",
+        "plaintext_sha256",
+        "first_data_frame_index",
+        "data_frame_count"
+      ],
+      "properties": {
+        "entity_kind": {
+          "enum": [
+            "growth_standard_version",
+            "baby_profile",
+            "lactating_profile",
+            "consent_record",
+            "module_preference",
+            "timer_session",
+            "timer_channel",
+            "timer_segment",
+            "care_event",
+            "feeding_detail",
+            "diaper_detail",
+            "nursing_side_detail",
+            "pumping_record",
+            "growth_record",
+            "formula_product",
+            "formula_product_version",
+            "formula_container",
+            "formula_container_version",
+            "bottle_item",
+            "bottle_identity_version",
+            "media_asset",
+            "moment",
+            "moment_asset",
+            "formula_evidence",
+            "bottle_evidence",
+            "formula_use",
+            "bottle_use"
+          ]
+        },
+        "entity_schema_version": {
+          "const": 1
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "plaintext_byte_length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8796093022208
+        },
+        "plaintext_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "first_data_frame_index": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2099999
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data_frame_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2100000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "count": {
+                "const": 0
+              }
+            },
+            "required": [
+              "count"
+            ]
+          },
+          "then": {
+            "properties": {
+              "plaintext_byte_length": {
+                "const": 0
+              },
+              "plaintext_sha256": {
+                "const": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "first_data_frame_index": {
+                "type": "null"
+              },
+              "data_frame_count": {
+                "const": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "count": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10000000
+              },
+              "plaintext_byte_length": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8796093022208
+              },
+              "first_data_frame_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2099999
+              },
+              "data_frame_count": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2100000
+              }
+            }
+          }
+        }
+      ]
+    },
+    "media_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "purpose",
+        "variant",
+        "mime_type",
+        "width_px",
+        "height_px",
+        "byte_size",
+        "sha256",
+        "chunk_count",
+        "first_data_frame_index"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "purpose": {
+          "enum": [
+            "moment",
+            "avatar",
+            "formula_front",
+            "formula_lot",
+            "formula_trace",
+            "bottle"
+          ]
+        },
+        "variant": {
+          "enum": [
+            "display",
+            "evidence",
+            "avatar"
+          ]
+        },
+        "mime_type": {
+          "enum": [
+            "image/heic",
+            "image/jpeg",
+            "image/png"
+          ]
+        },
+        "width_px": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000
+        },
+        "height_px": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000
+        },
+        "byte_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 52428800
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "chunk_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 14
+        },
+        "first_data_frame_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2099999
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "const": "moment"
+              }
+            },
+            "required": [
+              "purpose"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "const": "display"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "const": "avatar"
+              }
+            },
+            "required": [
+              "purpose"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "const": "avatar"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "enum": [
+                  "formula_front",
+                  "formula_lot",
+                  "formula_trace",
+                  "bottle"
+                ]
+              }
+            },
+            "required": [
+              "purpose"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "const": "evidence"
+              }
+            }
+          }
+        }
+      ],
+      "x-maxPixels": 80000000,
+      "x-chunkDataMaxBytes": 4000000
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_schema_version",
+        "archive_id",
+        "logical_schema_version",
+        "schema_bundle_sha256",
+        "record_encoding",
+        "record_count",
+        "media_count",
+        "media_payload_byte_count",
+        "record_sets",
+        "media_items"
+      ],
+      "properties": {
+        "manifest_schema_version": {
+          "const": 1
+        },
+        "archive_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "logical_schema_version": {
+          "const": 1
+        },
+        "schema_bundle_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "record_encoding": {
+          "const": "jcs-rfc8785-jsonl-lf-v1"
+        },
+        "record_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "media_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "media_payload_byte_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8796093022208
+        },
+        "record_sets": {
+          "type": "array",
+          "minItems": 27,
+          "maxItems": 27,
+          "prefixItems": [
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "growth_standard_version"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "baby_profile"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "lactating_profile"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "consent_record"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "module_preference"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "timer_session"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "timer_channel"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "timer_segment"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "care_event"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "feeding_detail"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "diaper_detail"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "nursing_side_detail"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "pumping_record"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "growth_record"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "formula_product"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "formula_product_version"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "formula_container"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "formula_container_version"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "bottle_item"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "bottle_identity_version"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "media_asset"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "moment"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "moment_asset"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "formula_evidence"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "bottle_evidence"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "formula_use"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/record_set"
+                },
+                {
+                  "properties": {
+                    "entity_kind": {
+                      "const": "bottle_use"
+                    },
+                    "entity_schema_version": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "entity_kind",
+                    "entity_schema_version"
+                  ]
+                }
+              ]
+            }
+          ],
+          "items": false
+        },
+        "media_items": {
+          "type": "array",
+          "maxItems": 1000000,
+          "items": {
+            "$ref": "#/$defs/media_item"
+          }
+        }
+      },
+      "$comment": "record_sets contains every registry kind exactly once in ordinal order. media_items is ordered by asset_id then variant. Frame indices are relative to the first non-manifest frame."
+    },
+    "media_header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "variant",
+        "chunk_index",
+        "chunk_count",
+        "chunk_plaintext_length"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "variant": {
+          "enum": [
+            "display",
+            "evidence",
+            "avatar"
+          ]
+        },
+        "chunk_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 13
+        },
+        "chunk_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 14
+        },
+        "chunk_plaintext_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4000000
+        }
+      },
+      "$comment": "chunk_index is zero-based and strictly less than chunk_count. chunk_plaintext_length equals the raw chunk byte count and the frame plaintext length equals 2 + header_length + chunk_plaintext_length. One frame contains one chunk; chunks for an item are contiguous and non-interleaved."
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "completion_schema_version",
+        "archive_id",
+        "logical_schema_version",
+        "schema_bundle_sha256",
+        "total_frame_count",
+        "manifest_frame_count",
+        "record_frame_count",
+        "media_frame_count",
+        "record_count",
+        "media_count",
+        "manifest_plaintext_byte_length",
+        "manifest_plaintext_sha256",
+        "records_plaintext_byte_length",
+        "records_plaintext_sha256",
+        "media_payload_byte_count",
+        "pre_completion_file_sha256"
+      ],
+      "properties": {
+        "completion_schema_version": {
+          "const": 1
+        },
+        "archive_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "logical_schema_version": {
+          "const": 1
+        },
+        "schema_bundle_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "total_frame_count": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 2100000
+        },
+        "manifest_frame_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2100000
+        },
+        "record_frame_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2100000
+        },
+        "media_frame_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2100000
+        },
+        "record_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "media_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "manifest_plaintext_byte_length": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 536870912
+        },
+        "manifest_plaintext_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "records_plaintext_byte_length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8796093022208
+        },
+        "records_plaintext_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_payload_byte_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8796093022208
+        },
+        "pre_completion_file_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "record_count": {
+                "const": 0
+              }
+            },
+            "required": [
+              "record_count"
+            ]
+          },
+          "then": {
+            "properties": {
+              "record_frame_count": {
+                "const": 0
+              },
+              "records_plaintext_byte_length": {
+                "const": 0
+              },
+              "records_plaintext_sha256": {
+                "const": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "media_count": {
+                "const": 0
+              }
+            },
+            "required": [
+              "media_count"
+            ]
+          },
+          "then": {
+            "properties": {
+              "media_frame_count": {
+                "const": 0
+              },
+              "media_payload_byte_count": {
+                "const": 0
+              }
+            }
+          }
+        }
+      ],
+      "$comment": "total_frame_count equals manifest_frame_count + record_frame_count + media_frame_count + 1. pre_completion_file_sha256 covers raw bytes [0, completion frame header offset)."
+    },
+    "payload_growth_standard_version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "standard_code",
+        "version",
+        "source_url",
+        "resource_sha256",
+        "is_active"
+      ],
+      "properties": {
+        "standard_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "x-maxUtf8Bytes": 128
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "x-maxUtf8Bytes": 128
+        },
+        "source_url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "x-maxUtf8Bytes": 2048
+        },
+        "resource_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "is_active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "payload_baby_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nickname",
+        "birth_local_date",
+        "growth_group",
+        "home_time_zone",
+        "grouping_generation",
+        "avatar_asset_id",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "nickname": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "x-maxUtf8Bytes": 512
+        },
+        "birth_local_date": {
+          "$ref": "#/$defs/date_only"
+        },
+        "growth_group": {
+          "enum": [
+            "male",
+            "female",
+            "unspecified"
+          ]
+        },
+        "home_time_zone": {
+          "$ref": "#/$defs/time_zone"
+        },
+        "grouping_generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "avatar_asset_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_lactating_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "home_time_zone",
+        "grouping_generation",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "home_time_zone": {
+          "$ref": "#/$defs/time_zone"
+        },
+        "grouping_generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_consent_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject_type",
+        "baby_id",
+        "lactating_profile_id",
+        "policy_version",
+        "scope_json",
+        "notice_sha256",
+        "granted_at_ms",
+        "withdrawn_at_ms"
+      ],
+      "properties": {
+        "subject_type": {
+          "enum": [
+            "child",
+            "adult"
+          ]
+        },
+        "baby_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "lactating_profile_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "x-maxUtf8Bytes": 256
+        },
+        "scope_json": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 65536,
+          "x-maxUtf8Bytes": 65536
+        },
+        "notice_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "granted_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "withdrawn_at_ms": {
+          "$ref": "#/$defs/nullable_positive_ms"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "subject_type": {
+              "const": "child"
+            },
+            "baby_id": {
+              "$ref": "#/$defs/lowercase_uuid"
+            },
+            "lactating_profile_id": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "subject_type",
+            "baby_id",
+            "lactating_profile_id"
+          ]
+        },
+        {
+          "properties": {
+            "subject_type": {
+              "const": "adult"
+            },
+            "baby_id": {
+              "type": "null"
+            },
+            "lactating_profile_id": {
+              "$ref": "#/$defs/lowercase_uuid"
+            }
+          },
+          "required": [
+            "subject_type",
+            "baby_id",
+            "lactating_profile_id"
+          ]
+        }
+      ],
+      "$comment": "scope_json is bounded historical opaque JSON text. It must be duplicate-key-free valid JSON, but never grants access after restore."
+    },
+    "payload_module_preference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module_type",
+        "is_enabled",
+        "home_position",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "module_type": {
+          "enum": [
+            "nursing",
+            "pumping",
+            "bottle",
+            "diaper",
+            "sleep",
+            "growth",
+            "moments",
+            "supplies"
+          ]
+        },
+        "is_enabled": {
+          "type": "boolean"
+        },
+        "home_position": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_timer_session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "baby_id",
+        "baby_context_detached_at_ms",
+        "lactating_profile_id",
+        "selected_mode",
+        "state",
+        "clock_verification_state",
+        "started_at_ms",
+        "last_activity_at_ms",
+        "ended_at_ms",
+        "final_care_event_id",
+        "final_pumping_record_id",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "nursing",
+            "pumping",
+            "sleep"
+          ]
+        },
+        "baby_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "baby_context_detached_at_ms": {
+          "$ref": "#/$defs/nullable_positive_ms"
+        },
+        "lactating_profile_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "selected_mode": {
+          "enum": [
+            "left",
+            "right",
+            "bilateral",
+            "generic"
+          ]
+        },
+        "state": {
+          "enum": [
+            "finished",
+            "abandoned"
+          ]
+        },
+        "clock_verification_state": {
+          "enum": [
+            "verified_current_process",
+            "wall_only_after_process_loss",
+            "user_confirmed",
+            "not_applicable"
+          ]
+        },
+        "started_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "last_activity_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "ended_at_ms": {
+          "$ref": "#/$defs/nullable_positive_ms"
+        },
+        "final_care_event_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "final_pumping_record_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "type": {
+                  "const": "sleep"
+                },
+                "baby_id": {
+                  "$ref": "#/$defs/lowercase_uuid"
+                },
+                "baby_context_detached_at_ms": {
+                  "type": "null"
+                },
+                "lactating_profile_id": {
+                  "type": "null"
+                },
+                "selected_mode": {
+                  "const": "generic"
+                }
+              },
+              "required": [
+                "type",
+                "baby_id",
+                "baby_context_detached_at_ms",
+                "lactating_profile_id",
+                "selected_mode"
+              ]
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "nursing"
+                },
+                "lactating_profile_id": {
+                  "$ref": "#/$defs/lowercase_uuid"
+                },
+                "selected_mode": {
+                  "enum": [
+                    "left",
+                    "right"
+                  ]
+                }
+              },
+              "required": [
+                "type",
+                "lactating_profile_id",
+                "selected_mode"
+              ],
+              "oneOf": [
+                {
+                  "properties": {
+                    "baby_id": {
+                      "$ref": "#/$defs/lowercase_uuid"
+                    },
+                    "baby_context_detached_at_ms": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "baby_id",
+                    "baby_context_detached_at_ms"
+                  ]
+                },
+                {
+                  "properties": {
+                    "baby_id": {
+                      "type": "null"
+                    },
+                    "baby_context_detached_at_ms": {
+                      "$ref": "#/$defs/positive_ms"
+                    },
+                    "state": {
+                      "enum": [
+                        "finished",
+                        "abandoned"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "baby_id",
+                    "baby_context_detached_at_ms",
+                    "state"
+                  ]
+                }
+              ]
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "pumping"
+                },
+                "lactating_profile_id": {
+                  "$ref": "#/$defs/lowercase_uuid"
+                },
+                "selected_mode": {
+                  "enum": [
+                    "left",
+                    "right",
+                    "bilateral"
+                  ]
+                }
+              },
+              "required": [
+                "type",
+                "lactating_profile_id",
+                "selected_mode"
+              ],
+              "oneOf": [
+                {
+                  "properties": {
+                    "baby_id": {
+                      "$ref": "#/$defs/lowercase_uuid"
+                    },
+                    "baby_context_detached_at_ms": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "baby_id",
+                    "baby_context_detached_at_ms"
+                  ]
+                },
+                {
+                  "properties": {
+                    "baby_id": {
+                      "type": "null"
+                    },
+                    "baby_context_detached_at_ms": {
+                      "$ref": "#/$defs/nullable_positive_ms"
+                    }
+                  },
+                  "required": [
+                    "baby_id",
+                    "baby_context_detached_at_ms"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "finished"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ended_at_ms": {
+                "$ref": "#/$defs/positive_ms"
+              }
+            },
+            "required": [
+              "ended_at_ms"
+            ],
+            "oneOf": [
+              {
+                "properties": {
+                  "type": {
+                    "const": "pumping"
+                  },
+                  "final_care_event_id": {
+                    "type": "null"
+                  },
+                  "final_pumping_record_id": {
+                    "$ref": "#/$defs/lowercase_uuid"
+                  }
+                },
+                "required": [
+                  "type",
+                  "final_care_event_id",
+                  "final_pumping_record_id"
+                ]
+              },
+              {
+                "properties": {
+                  "type": {
+                    "const": "sleep"
+                  },
+                  "final_care_event_id": {
+                    "$ref": "#/$defs/lowercase_uuid"
+                  },
+                  "final_pumping_record_id": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "type",
+                  "final_care_event_id",
+                  "final_pumping_record_id"
+                ]
+              },
+              {
+                "properties": {
+                  "type": {
+                    "const": "nursing"
+                  },
+                  "baby_id": {
+                    "$ref": "#/$defs/lowercase_uuid"
+                  },
+                  "final_care_event_id": {
+                    "$ref": "#/$defs/lowercase_uuid"
+                  },
+                  "final_pumping_record_id": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "type",
+                  "baby_id",
+                  "final_care_event_id",
+                  "final_pumping_record_id"
+                ]
+              },
+              {
+                "properties": {
+                  "type": {
+                    "const": "nursing"
+                  },
+                  "baby_id": {
+                    "type": "null"
+                  },
+                  "baby_context_detached_at_ms": {
+                    "$ref": "#/$defs/positive_ms"
+                  },
+                  "final_care_event_id": {
+                    "type": "null"
+                  },
+                  "final_pumping_record_id": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "type",
+                  "baby_id",
+                  "baby_context_detached_at_ms",
+                  "final_care_event_id",
+                  "final_pumping_record_id"
+                ]
+              }
+            ]
+          },
+          "else": {
+            "properties": {
+              "final_care_event_id": {
+                "type": "null"
+              },
+              "final_pumping_record_id": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "abandoned"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ended_at_ms": {
+                "$ref": "#/$defs/positive_ms"
+              }
+            }
+          }
+        }
+      ],
+      "$comment": "Archive materialization converts every non-terminal source session to abandoned, closes open segments at the persisted last_activity_at_ms, sets wall_only_after_process_loss and emits no final record. Therefore only finished or abandoned sessions are valid archive records. Cross-field time ordering is enforced by the domain verifier."
+    },
+    "payload_timer_channel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session_id",
+        "channel",
+        "is_selected",
+        "state",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "session_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "channel": {
+          "enum": [
+            "left",
+            "right",
+            "generic"
+          ]
+        },
+        "is_selected": {
+          "type": "boolean"
+        },
+        "state": {
+          "enum": [
+            "ended",
+            "abandoned"
+          ]
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "is_selected": {
+              "const": true
+            }
+          },
+          "required": [
+            "is_selected"
+          ]
+        },
+        {
+          "properties": {
+            "is_selected": {
+              "const": false
+            },
+            "state": {
+              "const": "abandoned"
+            }
+          },
+          "required": [
+            "is_selected",
+            "state"
+          ]
+        }
+      ],
+      "$comment": "Archive materialization emits only terminal ended/abandoned channels; active source channels are normalized to abandoned."
+    },
+    "payload_timer_segment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel_id",
+        "started_at_ms",
+        "ended_at_ms",
+        "created_at_ms"
+      ],
+      "properties": {
+        "channel_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "started_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "ended_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      },
+      "$comment": "Archive materialization closes every source segment; ended_at_ms is never null in v1 records."
+    },
+    "payload_care_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baby_id",
+        "type",
+        "occurred_at_ms",
+        "ended_at_ms",
+        "event_time_zone",
+        "event_utc_offset_seconds",
+        "ended_utc_offset_seconds",
+        "group_local_date",
+        "note",
+        "source_timer_session_id",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "baby_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "type": {
+          "enum": [
+            "nursing",
+            "bottle",
+            "diaper",
+            "sleep"
+          ]
+        },
+        "occurred_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "ended_at_ms": {
+          "$ref": "#/$defs/nullable_positive_ms"
+        },
+        "event_time_zone": {
+          "$ref": "#/$defs/time_zone"
+        },
+        "event_utc_offset_seconds": {
+          "$ref": "#/$defs/utc_offset_seconds"
+        },
+        "ended_utc_offset_seconds": {
+          "$ref": "#/$defs/nullable_utc_offset_seconds"
+        },
+        "group_local_date": {
+          "$ref": "#/$defs/date_only"
+        },
+        "note": {
+          "$ref": "#/$defs/note"
+        },
+        "source_timer_session_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "ended_at_ms": {
+                  "type": "null"
+                },
+                "ended_utc_offset_seconds": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "ended_at_ms",
+                "ended_utc_offset_seconds"
+              ]
+            },
+            {
+              "properties": {
+                "ended_at_ms": {
+                  "$ref": "#/$defs/positive_ms"
+                },
+                "ended_utc_offset_seconds": {
+                  "$ref": "#/$defs/utc_offset_seconds"
+                }
+              },
+              "required": [
+                "ended_at_ms",
+                "ended_utc_offset_seconds"
+              ]
+            }
+          ]
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "nursing",
+                  "sleep"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ended_at_ms": {
+                "$ref": "#/$defs/positive_ms"
+              },
+              "ended_utc_offset_seconds": {
+                "$ref": "#/$defs/utc_offset_seconds"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "diaper"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ended_at_ms": {
+                "type": "null"
+              },
+              "ended_utc_offset_seconds": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "payload_feeding_detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_id",
+        "mode",
+        "milk_type",
+        "nursing_total_seconds",
+        "amount_ml"
+      ],
+      "properties": {
+        "event_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "mode": {
+          "enum": [
+            "nursing",
+            "bottle"
+          ]
+        },
+        "milk_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "breast_milk",
+                "formula"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nursing_total_seconds": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 43200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amount_ml": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "nursing"
+            },
+            "milk_type": {
+              "const": "breast_milk"
+            },
+            "nursing_total_seconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 43200
+            },
+            "amount_ml": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "mode",
+            "milk_type",
+            "nursing_total_seconds",
+            "amount_ml"
+          ]
+        },
+        {
+          "properties": {
+            "mode": {
+              "const": "bottle"
+            },
+            "milk_type": {
+              "enum": [
+                "breast_milk",
+                "formula"
+              ]
+            },
+            "nursing_total_seconds": {
+              "type": "null"
+            },
+            "amount_ml": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2000
+            }
+          },
+          "required": [
+            "mode",
+            "milk_type",
+            "nursing_total_seconds",
+            "amount_ml"
+          ]
+        }
+      ]
+    },
+    "payload_diaper_detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_id",
+        "diaper_type"
+      ],
+      "properties": {
+        "event_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "diaper_type": {
+          "enum": [
+            "wet",
+            "dirty",
+            "both"
+          ]
+        }
+      }
+    },
+    "payload_nursing_side_detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "related_event_id",
+        "lactating_profile_id",
+        "timer_session_id",
+        "left_seconds_cache",
+        "right_seconds_cache",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "related_event_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "lactating_profile_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "timer_session_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "left_seconds_cache": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 43200
+        },
+        "right_seconds_cache": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 43200
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_pumping_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lactating_profile_id",
+        "related_baby_id",
+        "related_baby_local_date",
+        "occurred_at_ms",
+        "ended_at_ms",
+        "event_time_zone",
+        "event_utc_offset_seconds",
+        "ended_utc_offset_seconds",
+        "pattern",
+        "left_ml",
+        "right_ml",
+        "total_ml",
+        "effective_seconds_cache",
+        "timer_session_id",
+        "note",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "lactating_profile_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "related_baby_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "related_baby_local_date": {
+          "$ref": "#/$defs/nullable_date_only"
+        },
+        "occurred_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "ended_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "event_time_zone": {
+          "$ref": "#/$defs/time_zone"
+        },
+        "event_utc_offset_seconds": {
+          "$ref": "#/$defs/utc_offset_seconds"
+        },
+        "ended_utc_offset_seconds": {
+          "$ref": "#/$defs/utc_offset_seconds"
+        },
+        "pattern": {
+          "enum": [
+            "single_left",
+            "single_right",
+            "bilateral_simultaneous",
+            "bilateral_sequential"
+          ]
+        },
+        "left_ml": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "right_ml": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "total_ml": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "effective_seconds_cache": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 43200
+        },
+        "timer_session_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "note": {
+          "$ref": "#/$defs/note"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "related_baby_id": {
+                  "type": "null"
+                },
+                "related_baby_local_date": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "related_baby_id",
+                "related_baby_local_date"
+              ]
+            },
+            {
+              "properties": {
+                "related_baby_id": {
+                  "$ref": "#/$defs/lowercase_uuid"
+                },
+                "related_baby_local_date": {
+                  "$ref": "#/$defs/date_only"
+                }
+              },
+              "required": [
+                "related_baby_id",
+                "related_baby_local_date"
+              ]
+            }
+          ]
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "properties": {
+                  "left_ml": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left_ml"
+                ]
+              },
+              {
+                "properties": {
+                  "right_ml": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "right_ml"
+                ]
+              }
+            ]
+          },
+          "then": {
+            "properties": {
+              "total_ml": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2000
+              }
+            }
+          }
+        }
+      ],
+      "$comment": "When either side amount is present, the domain verifier also requires total_ml == coalesce(left_ml,0) + coalesce(right_ml,0)."
+    },
+    "payload_growth_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baby_id",
+        "measured_local_date",
+        "measurement_type",
+        "weight_grams",
+        "length_mm",
+        "note",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "baby_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "measured_local_date": {
+          "$ref": "#/$defs/date_only"
+        },
+        "measurement_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "recumbent_length",
+                "standing_height"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "weight_grams": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 50000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "length_mm": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 200,
+              "maximum": 1500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "note": {
+          "$ref": "#/$defs/note"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      },
+      "allOf": [
+        {
+          "anyOf": [
+            {
+              "properties": {
+                "weight_grams": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "weight_grams"
+              ]
+            },
+            {
+              "properties": {
+                "length_mm": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "length_mm"
+              ]
+            }
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "length_mm": {
+                  "type": "null"
+                },
+                "measurement_type": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "length_mm",
+                "measurement_type"
+              ]
+            },
+            {
+              "properties": {
+                "length_mm": {
+                  "type": "integer",
+                  "minimum": 200,
+                  "maximum": 1500
+                },
+                "measurement_type": {
+                  "enum": [
+                    "recumbent_length",
+                    "standing_height"
+                  ]
+                }
+              },
+              "required": [
+                "length_mm",
+                "measurement_type"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "payload_formula_product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baby_id",
+        "current_version_id",
+        "status",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "baby_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "current_version_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "inactive"
+          ]
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_formula_product_version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_id",
+        "version",
+        "brand",
+        "product_name",
+        "stage_or_age",
+        "specification",
+        "manufacturer",
+        "origin_country",
+        "importer",
+        "formula_registration_no",
+        "gtin",
+        "content_sha256",
+        "created_at_ms"
+      ],
+      "properties": {
+        "product_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "brand": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "x-maxUtf8Bytes": 1024
+        },
+        "product_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "x-maxUtf8Bytes": 1024
+        },
+        "stage_or_age": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "x-maxUtf8Bytes": 1024
+        },
+        "specification": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "x-maxUtf8Bytes": 1024
+        },
+        "manufacturer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "x-maxUtf8Bytes": 1024
+        },
+        "origin_country": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "importer": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "formula_registration_no": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "gtin": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_formula_container": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_id",
+        "current_version_id",
+        "opened_at_ms",
+        "status",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "product_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "current_version_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "opened_at_ms": {
+          "$ref": "#/$defs/nullable_positive_ms"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "finished",
+            "discarded",
+            "inactive"
+          ]
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_formula_container_version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "container_id",
+        "version",
+        "product_version_id",
+        "lot_number_raw",
+        "produced_local_date",
+        "expires_local_date",
+        "printed_date_raw",
+        "purchased_local_date",
+        "seller_or_channel",
+        "trace_provider",
+        "enterprise_code",
+        "code_symbology",
+        "trace_code_raw",
+        "trace_code_normalized",
+        "verification_status",
+        "content_sha256",
+        "created_at_ms"
+      ],
+      "properties": {
+        "container_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "product_version_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "lot_number_raw": {
+          "$ref": "#/$defs/nullable_string_1024"
+        },
+        "produced_local_date": {
+          "$ref": "#/$defs/nullable_date_only"
+        },
+        "expires_local_date": {
+          "$ref": "#/$defs/nullable_date_only"
+        },
+        "printed_date_raw": {
+          "$ref": "#/$defs/nullable_string_1024"
+        },
+        "purchased_local_date": {
+          "$ref": "#/$defs/nullable_date_only"
+        },
+        "seller_or_channel": {
+          "$ref": "#/$defs/nullable_string_2048"
+        },
+        "trace_provider": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "enterprise_code": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "code_symbology": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "trace_code_raw": {
+          "$ref": "#/$defs/nullable_string_8192"
+        },
+        "trace_code_normalized": {
+          "$ref": "#/$defs/nullable_string_8192"
+        },
+        "verification_status": {
+          "enum": [
+            "draft",
+            "user_confirmed",
+            "recall_ready"
+          ]
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_bottle_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baby_id",
+        "current_version_id",
+        "status",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "baby_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "current_version_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "inactive"
+          ]
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_bottle_identity_version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bottle_id",
+        "version",
+        "nickname",
+        "brand",
+        "manufacturer",
+        "model",
+        "capacity_ml",
+        "material",
+        "nipple_spec",
+        "gtin",
+        "lot_or_serial",
+        "manufactured_local_date",
+        "verification_status",
+        "content_sha256",
+        "created_at_ms"
+      ],
+      "properties": {
+        "bottle_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "nickname": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "x-maxUtf8Bytes": 512
+        },
+        "brand": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "manufacturer": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "model": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "capacity_ml": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "material": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "nipple_spec": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "gtin": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "lot_or_serial": {
+          "$ref": "#/$defs/nullable_string_64k"
+        },
+        "manufactured_local_date": {
+          "$ref": "#/$defs/nullable_date_only"
+        },
+        "verification_status": {
+          "enum": [
+            "basic",
+            "recall_ready"
+          ]
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_media_asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baby_id",
+        "purpose",
+        "captured_at_ms",
+        "captured_time_zone",
+        "captured_utc_offset_seconds",
+        "captured_baby_local_date",
+        "source_kind",
+        "metadata_confidence",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "baby_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "purpose": {
+          "enum": [
+            "moment",
+            "avatar",
+            "formula_front",
+            "formula_lot",
+            "formula_trace",
+            "bottle"
+          ]
+        },
+        "captured_at_ms": {
+          "$ref": "#/$defs/nullable_positive_ms"
+        },
+        "captured_time_zone": {
+          "$ref": "#/$defs/nullable_time_zone"
+        },
+        "captured_utc_offset_seconds": {
+          "$ref": "#/$defs/nullable_utc_offset_seconds"
+        },
+        "captured_baby_local_date": {
+          "$ref": "#/$defs/nullable_date_only"
+        },
+        "source_kind": {
+          "enum": [
+            "photos_picker",
+            "camera",
+            "archive_import"
+          ]
+        },
+        "metadata_confidence": {
+          "enum": [
+            "absolute",
+            "offset_exif",
+            "assumed_timezone",
+            "user_confirmed",
+            "not_applicable"
+          ]
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "captured_at_ms": {
+                  "type": "null"
+                },
+                "captured_time_zone": {
+                  "type": "null"
+                },
+                "captured_utc_offset_seconds": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "captured_at_ms",
+                "captured_time_zone",
+                "captured_utc_offset_seconds"
+              ]
+            },
+            {
+              "properties": {
+                "captured_at_ms": {
+                  "$ref": "#/$defs/positive_ms"
+                },
+                "captured_time_zone": {
+                  "$ref": "#/$defs/time_zone"
+                },
+                "captured_utc_offset_seconds": {
+                  "$ref": "#/$defs/utc_offset_seconds"
+                }
+              },
+              "required": [
+                "captured_at_ms",
+                "captured_time_zone",
+                "captured_utc_offset_seconds"
+              ]
+            }
+          ]
+        },
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "const": "moment"
+              }
+            },
+            "required": [
+              "purpose"
+            ]
+          },
+          "then": {
+            "properties": {
+              "captured_at_ms": {
+                "$ref": "#/$defs/positive_ms"
+              },
+              "captured_time_zone": {
+                "$ref": "#/$defs/time_zone"
+              },
+              "captured_utc_offset_seconds": {
+                "$ref": "#/$defs/utc_offset_seconds"
+              },
+              "captured_baby_local_date": {
+                "$ref": "#/$defs/date_only"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "payload_moment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baby_id",
+        "group_local_date",
+        "occurred_at_ms",
+        "caption",
+        "derived_from_moment_id",
+        "grouping_generation",
+        "created_at_ms",
+        "updated_at_ms"
+      ],
+      "properties": {
+        "baby_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "group_local_date": {
+          "$ref": "#/$defs/date_only"
+        },
+        "occurred_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "caption": {
+          "$ref": "#/$defs/note"
+        },
+        "derived_from_moment_id": {
+          "$ref": "#/$defs/nullable_uuid"
+        },
+        "grouping_generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "created_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        },
+        "updated_at_ms": {
+          "$ref": "#/$defs/positive_ms"
+        }
+      }
+    },
+    "payload_moment_asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "moment_id",
+        "asset_id",
+        "display_order"
+      ],
+      "properties": {
+        "moment_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "asset_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "display_order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        }
+      }
+    },
+    "payload_formula_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "container_version_id",
+        "asset_id",
+        "evidence_type",
+        "capture_source",
+        "ocr_confidence",
+        "user_confirmed_at_ms"
+      ],
+      "properties": {
+        "container_version_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "asset_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "evidence_type": {
+          "enum": [
+            "front",
+            "lot_date",
+            "trace"
+          ]
+        },
+        "capture_source": {
+          "enum": [
+            "camera",
+            "photos_picker",
+            "archive_import"
+          ]
+        },
+        "ocr_confidence": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user_confirmed_at_ms": {
+          "$ref": "#/$defs/nullable_positive_ms"
+        }
+      }
+    },
+    "payload_bottle_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bottle_version_id",
+        "asset_id",
+        "evidence_type",
+        "capture_source",
+        "user_confirmed_at_ms"
+      ],
+      "properties": {
+        "bottle_version_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "asset_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "evidence_type": {
+          "enum": [
+            "front",
+            "model_lot",
+            "code"
+          ]
+        },
+        "capture_source": {
+          "enum": [
+            "camera",
+            "photos_picker",
+            "archive_import"
+          ]
+        },
+        "user_confirmed_at_ms": {
+          "$ref": "#/$defs/nullable_positive_ms"
+        }
+      }
+    },
+    "payload_formula_use": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feeding_event_id",
+        "container_version_id",
+        "contribution_ml",
+        "contribution_known"
+      ],
+      "properties": {
+        "feeding_event_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "container_version_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "contribution_ml": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contribution_known": {
+          "type": "boolean"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "contribution_known": {
+              "const": true
+            },
+            "contribution_ml": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2000
+            }
+          },
+          "required": [
+            "contribution_known",
+            "contribution_ml"
+          ]
+        },
+        {
+          "properties": {
+            "contribution_known": {
+              "const": false
+            },
+            "contribution_ml": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "contribution_known",
+            "contribution_ml"
+          ]
+        }
+      ]
+    },
+    "payload_bottle_use": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feeding_event_id",
+        "bottle_version_id"
+      ],
+      "properties": {
+        "feeding_event_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "bottle_version_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        }
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_kind",
+        "entity_schema_version",
+        "object_id",
+        "payload"
+      ],
+      "properties": {
+        "entity_kind": {
+          "enum": [
+            "growth_standard_version",
+            "baby_profile",
+            "lactating_profile",
+            "consent_record",
+            "module_preference",
+            "timer_session",
+            "timer_channel",
+            "timer_segment",
+            "care_event",
+            "feeding_detail",
+            "diaper_detail",
+            "nursing_side_detail",
+            "pumping_record",
+            "growth_record",
+            "formula_product",
+            "formula_product_version",
+            "formula_container",
+            "formula_container_version",
+            "bottle_item",
+            "bottle_identity_version",
+            "media_asset",
+            "moment",
+            "moment_asset",
+            "formula_evidence",
+            "bottle_evidence",
+            "formula_use",
+            "bottle_use"
+          ]
+        },
+        "entity_schema_version": {
+          "const": 1
+        },
+        "object_id": {
+          "$ref": "#/$defs/lowercase_uuid"
+        },
+        "payload": {}
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "growth_standard_version"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_growth_standard_version"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "baby_profile"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_baby_profile"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "lactating_profile"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_lactating_profile"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "consent_record"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_consent_record"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "module_preference"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_module_preference"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "timer_session"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_timer_session"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "timer_channel"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_timer_channel"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "timer_segment"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_timer_segment"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "care_event"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_care_event"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "feeding_detail"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_feeding_detail"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "diaper_detail"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_diaper_detail"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "nursing_side_detail"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_nursing_side_detail"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "pumping_record"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_pumping_record"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "growth_record"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_growth_record"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "formula_product"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_formula_product"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "formula_product_version"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_formula_product_version"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "formula_container"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_formula_container"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "formula_container_version"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_formula_container_version"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "bottle_item"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_bottle_item"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "bottle_identity_version"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_bottle_identity_version"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "media_asset"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_media_asset"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "moment"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_moment"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "moment_asset"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_moment_asset"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "formula_evidence"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_formula_evidence"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "bottle_evidence"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_bottle_evidence"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "formula_use"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_formula_use"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        },
+        {
+          "properties": {
+            "entity_kind": {
+              "const": "bottle_use"
+            },
+            "entity_schema_version": {
+              "const": 1
+            },
+            "payload": {
+              "$ref": "#/$defs/payload_bottle_use"
+            }
+          },
+          "required": [
+            "entity_kind",
+            "entity_schema_version",
+            "payload"
+          ]
+        }
+      ],
+      "$comment": "One complete RFC 8785 JCS object per JSONL line, followed by exactly LF (0x0A), no BOM, CRLF, empty line or cross-frame line. Maximum line length is 1 MiB."
+    }
+  }
+}
