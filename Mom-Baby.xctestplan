@@ -1,0 +1,37 @@
+{
+  "configurations" : [
+    {
+      "id" : "A1000000-0000-0000-0000-000000000001",
+      "name" : "Default",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Mom-Baby.xcodeproj",
+      "identifier" : "BC41D592302B64BE00B7CB37",
+      "name" : "Mom-Baby"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Mom-Baby.xcodeproj",
+        "identifier" : "B10000000000000000000006",
+        "name" : "Mom-BabyTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Mom-Baby.xcodeproj",
+        "identifier" : "A10000000000000000000006",
+        "name" : "Mom-BabyUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

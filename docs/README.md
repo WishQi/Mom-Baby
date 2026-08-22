@@ -10,6 +10,7 @@
 
 - [`MVP-TECHNICAL-ARCHITECTURE.md`](./MVP-TECHNICAL-ARCHITECTURE.md)：架构结论、纯端上/CloudKit/自建服务比较、范围调整和交付计划。
 - [`MVP-IOS-TECHNICAL-DESIGN.md`](./MVP-IOS-TECHNICAL-DESIGN.md)：iOS 模块、数据库、计时、媒体、安全、导出、测试和实施顺序。
+- [`T0-DEPENDENCY-AUDIT.md`](./T0-DEPENDENCY-AUDIT.md)：T0 当前第三方运行时依赖、精确锁定、许可证、Privacy Manifest 与尚未完成的供应链 Gate。
 - [`MVP-LOCAL-ARCHIVE-SPEC.md`](./MVP-LOCAL-ARCHIVE-SPEC.md)：公开发布所需的端到端加密完整归档格式、导入协议和安全测试合同。
 - [`schemas/mombaby-archive-v1.schema.json`](./schemas/mombaby-archive-v1.schema.json) · [`entity registry`](./schemas/mombaby-archive-v1-entity-registry.json) · [`SQLite mapping`](./schemas/mombaby-archive-v1-sqlite-mapping.json)：归档 v1 的机器可读格式、27 类实体顺序/引用和 44 表逐字段映射合同。
 - [`MVP-SERVER-TECHNICAL-DESIGN.md`](./MVP-SERVER-TECHNICAL-DESIGN.md)：后续密文云、同步、家庭权限和召回资料服务的 P1 架构/安全基线；不是已冻结的 wire protocol，OpenAPI、密码 profile 与 P1 客户端合同另设实施 Gate。

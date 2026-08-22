@@ -6,7 +6,33 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A20000000000000000000001 /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000005 /* Domain */; };
+		A20000000000000000000002 /* Persistence in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000006 /* Persistence */; };
+		A20000000000000000000003 /* MediaProcessing in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000007 /* MediaProcessing */; };
+		B10000000000000000000001 /* Persistence in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000006 /* Persistence */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A10000000000000000000010 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BC41D58B302B64BE00B7CB37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC41D592302B64BE00B7CB37;
+			remoteInfo = "Mom-Baby";
+		};
+		B10000000000000000000003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BC41D58B302B64BE00B7CB37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC41D592302B64BE00B7CB37;
+			remoteInfo = "Mom-Baby";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		A10000000000000000000001 /* Mom-BabyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Mom-BabyUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000002 /* Mom-BabyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Mom-BabyTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC41D593302B64BE00B7CB37 /* Mom-Baby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mom-Baby.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -21,6 +47,16 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		A10000000000000000000002 /* Mom-BabyUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Mom-BabyUITests";
+			sourceTree = "<group>";
+		};
+		B10000000000000000000004 /* Mom-BabyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Mom-BabyTests";
+			sourceTree = "<group>";
+		};
 		BC41D595302B64BE00B7CB37 /* Mom-Baby */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -32,10 +68,28 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A10000000000000000000003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000001 /* Persistence in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BC41D590302B64BE00B7CB37 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A20000000000000000000001 /* Domain in Frameworks */,
+				A20000000000000000000002 /* Persistence in Frameworks */,
+				A20000000000000000000003 /* MediaProcessing in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +100,8 @@
 			isa = PBXGroup;
 			children = (
 				BC41D595302B64BE00B7CB37 /* Mom-Baby */,
+				B10000000000000000000004 /* Mom-BabyTests */,
+				A10000000000000000000002 /* Mom-BabyUITests */,
 				BC41D594302B64BE00B7CB37 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +110,8 @@
 			isa = PBXGroup;
 			children = (
 				BC41D593302B64BE00B7CB37 /* Mom-Baby.app */,
+				B10000000000000000000002 /* Mom-BabyTests.xctest */,
+				A10000000000000000000001 /* Mom-BabyUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,6 +119,53 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A10000000000000000000006 /* Mom-BabyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000009 /* Build configuration list for PBXNativeTarget "Mom-BabyUITests" */;
+			buildPhases = (
+				A10000000000000000000005 /* Sources */,
+				A10000000000000000000003 /* Frameworks */,
+				A10000000000000000000004 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A10000000000000000000011 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A10000000000000000000002 /* Mom-BabyUITests */,
+			);
+			name = "Mom-BabyUITests";
+			packageProductDependencies = (
+			);
+			productName = "Mom-BabyUITests";
+			productReference = A10000000000000000000001 /* Mom-BabyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		B10000000000000000000006 /* Mom-BabyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B1000000000000000000000B /* Build configuration list for PBXNativeTarget "Mom-BabyTests" */;
+			buildPhases = (
+				B10000000000000000000007 /* Sources */,
+				B10000000000000000000005 /* Frameworks */,
+				B10000000000000000000008 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B1000000000000000000000C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B10000000000000000000004 /* Mom-BabyTests */,
+			);
+			name = "Mom-BabyTests";
+			packageProductDependencies = (
+				A20000000000000000000006 /* Persistence */,
+			);
+			productName = "Mom-BabyTests";
+			productReference = B10000000000000000000002 /* Mom-BabyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		BC41D592302B64BE00B7CB37 /* Mom-Baby */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BC41D5A1302B64BF00B7CB37 /* Build configuration list for PBXNativeTarget "Mom-Baby" */;
@@ -78,6 +183,9 @@
 			);
 			name = "Mom-Baby";
 			packageProductDependencies = (
+				A20000000000000000000005 /* Domain */,
+				A20000000000000000000006 /* Persistence */,
+				A20000000000000000000007 /* MediaProcessing */,
 			);
 			productName = "Mom-Baby";
 			productReference = BC41D593302B64BE00B7CB37 /* Mom-Baby.app */;
@@ -93,31 +201,64 @@
 				LastSwiftUpdateCheck = 2660;
 				LastUpgradeCheck = 2660;
 				TargetAttributes = {
+					A10000000000000000000006 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = BC41D592302B64BE00B7CB37;
+					};
+					B10000000000000000000006 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = BC41D592302B64BE00B7CB37;
+					};
 					BC41D592302B64BE00B7CB37 = {
 						CreatedOnToolsVersion = 26.6;
+						SystemCapabilities = {
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
 			buildConfigurationList = BC41D58E302B64BE00B7CB37 /* Build configuration list for PBXProject "Mom-Baby" */;
-			developmentRegion = en;
+			developmentRegion = "zh-Hans";
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				"zh-Hans",
 				en,
 				Base,
 			);
 			mainGroup = BC41D58A302B64BE00B7CB37;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A20000000000000000000004 /* XCLocalSwiftPackageReference "MomBabyCore" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BC41D594302B64BE00B7CB37 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				BC41D592302B64BE00B7CB37 /* Mom-Baby */,
+				B10000000000000000000006 /* Mom-BabyTests */,
+				A10000000000000000000006 /* Mom-BabyUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A10000000000000000000004 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BC41D591302B64BE00B7CB37 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -128,6 +269,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A10000000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000007 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BC41D58F302B64BE00B7CB37 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,7 +292,108 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A10000000000000000000011 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC41D592302B64BE00B7CB37 /* Mom-Baby */;
+			targetProxy = A10000000000000000000010 /* PBXContainerItemProxy */;
+		};
+		B1000000000000000000000C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC41D592302B64BE00B7CB37 /* Mom-Baby */;
+			targetProxy = B10000000000000000000003 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		A10000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9VPLXE5668;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maoqi.Mom-BabyUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Mom-Baby";
+			};
+			name = Debug;
+		};
+		A10000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9VPLXE5668;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maoqi.Mom-BabyUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Mom-Baby";
+			};
+			name = Release;
+		};
+		B10000000000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9VPLXE5668;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maoqi.Mom-BabyTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mom-Baby.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mom-Baby";
+			};
+			name = Debug;
+		};
+		B1000000000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9VPLXE5668;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maoqi.Mom-BabyTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mom-Baby.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mom-Baby";
+			};
+			name = Release;
+		};
 		BC41D5A2302B64BF00B7CB37 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -154,7 +410,8 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -166,8 +423,9 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -188,7 +446,8 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -200,8 +459,9 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -259,7 +519,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -317,7 +577,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -330,6 +590,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A10000000000000000000009 /* Build configuration list for PBXNativeTarget "Mom-BabyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000007 /* Debug */,
+				A10000000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B1000000000000000000000B /* Build configuration list for PBXNativeTarget "Mom-BabyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000009 /* Debug */,
+				B1000000000000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BC41D58E302B64BE00B7CB37 /* Build configuration list for PBXProject "Mom-Baby" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -349,6 +627,31 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A20000000000000000000004 /* XCLocalSwiftPackageReference "MomBabyCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = MomBabyCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A20000000000000000000005 /* Domain */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000004 /* XCLocalSwiftPackageReference "MomBabyCore" */;
+			productName = Domain;
+		};
+		A20000000000000000000006 /* Persistence */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000004 /* XCLocalSwiftPackageReference "MomBabyCore" */;
+			productName = Persistence;
+		};
+		A20000000000000000000007 /* MediaProcessing */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000004 /* XCLocalSwiftPackageReference "MomBabyCore" */;
+			productName = MediaProcessing;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BC41D58B302B64BE00B7CB37 /* Project object */;
 }

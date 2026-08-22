@@ -1,0 +1,870 @@
+{
+  "sourceLanguage" : "zh-Hans",
+  "strings" : {
+    "%@ · %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "˘ ᴗ ˘" : {
+
+    },
+    "bootstrap.action.retry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重试"
+          }
+        }
+      }
+    },
+    "bootstrap.locating_vault.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your care records remain on this device."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照护记录仍会保存在这台设备上。"
+          }
+        }
+      }
+    },
+    "bootstrap.locating_vault.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finding Local Records"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在查找本地资料"
+          }
+        }
+      }
+    },
+    "bootstrap.migrating_files.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep Mom & Baby open until this step finishes."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此步骤完成前，请保持妈妈与宝宝处于打开状态。"
+          }
+        }
+      }
+    },
+    "bootstrap.migrating_files.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Organizing Local Files"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在整理本地文件"
+          }
+        }
+      }
+    },
+    "bootstrap.migrating_schema.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep Mom & Baby open while records are updated."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新完成前，请保持妈妈与宝宝处于打开状态。"
+          }
+        }
+      }
+    },
+    "bootstrap.migrating_schema.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updating Local Records"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在更新本地资料"
+          }
+        }
+      }
+    },
+    "bootstrap.newer_schema.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "These records were created by a newer compatible version. This version will not change them."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这些记录由更新版本创建。当前版本不会修改它们，请安装兼容版本后继续。"
+          }
+        }
+      }
+    },
+    "bootstrap.newer_schema.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Newer App Is Required"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要更新版本的 App"
+          }
+        }
+      }
+    },
+    "bootstrap.preparing_migration.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No care records are available until preparation completes."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "准备完成前不会打开照护记录。"
+          }
+        }
+      }
+    },
+    "bootstrap.preparing_migration.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing the Update"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在准备资料更新"
+          }
+        }
+      }
+    },
+    "bootstrap.preparing.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your care records stay on this device."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照护记录会保存在这台设备上。"
+          }
+        }
+      }
+    },
+    "bootstrap.preparing.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing Mom & Baby"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在准备妈妈与宝宝"
+          }
+        }
+      }
+    },
+    "bootstrap.protection_blocked.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mom & Baby did not open or change your records because secure storage could not be verified. Keep the device unlocked and try again."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由于无法确认安全存储，妈妈与宝宝没有打开或修改记录。请保持设备解锁后重试。"
+          }
+        }
+      }
+    },
+    "bootstrap.protection_blocked.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Secure Storage Is Unavailable"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安全存储暂不可用"
+          }
+        }
+      }
+    },
+    "bootstrap.read_only_export.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safe archive export is not available in this version. Your records remain on this device and will not be changed."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此版本尚未提供安全归档导出。记录会留在这台设备上，且不会被修改。"
+          }
+        }
+      }
+    },
+    "bootstrap.read_only_export.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Records Need Read-Only Recovery"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记录需要只读恢复"
+          }
+        }
+      }
+    },
+    "bootstrap.recovery.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your records were not changed. Try preparing the app again."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的记录没有被修改，可以重新尝试准备 App。"
+          }
+        }
+      }
+    },
+    "bootstrap.recovery.retry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重试"
+          }
+        }
+      }
+    },
+    "bootstrap.recovery.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mom & Baby Needs Attention"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "妈妈与宝宝需要处理后才能继续"
+          }
+        }
+      }
+    },
+    "bootstrap.validating_header.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mom & Baby will only open a compatible local database."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "妈妈与宝宝只会打开兼容的本地数据库。"
+          }
+        }
+      }
+    },
+    "bootstrap.validating_header.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking Record Compatibility"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查资料兼容性"
+          }
+        }
+      }
+    },
+    "bootstrap.validating_result.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Care records will open after the final safety check."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成最后的安全检查后即可打开照护记录。"
+          }
+        }
+      }
+    },
+    "bootstrap.validating_result.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirming Record Integrity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在确认资料完整性"
+          }
+        }
+      }
+    },
+    "bootstrap.waiting_for_protected_data.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlock this device to access protected care records. Mom & Baby will continue automatically."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请解锁设备以访问受保护的照护记录。解锁后会自动继续。"
+          }
+        }
+      }
+    },
+    "bootstrap.waiting_for_protected_data.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device Locked"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备已锁定"
+          }
+        }
+      }
+    },
+    "history.accessibility_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens the care history"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开照护历史"
+          }
+        }
+      }
+    },
+    "history.placeholder.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your care timeline will appear here."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照护时间线之后会显示在这里。"
+          }
+        }
+      }
+    },
+    "history.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "历史"
+          }
+        }
+      }
+    },
+    "Mom-Baby" : {
+
+    },
+    "MOM-BABY" : {
+
+    },
+    "Mom-Baby 已隐藏照护资料" : {
+
+    },
+    "record.placeholder.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feeding, diaper, and sleep entry points will be added here next."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接下来会在这里加入喂养、尿布和睡眠记录入口。"
+          }
+        }
+      }
+    },
+    "record.placeholder.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a Record"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加记录"
+          }
+        }
+      }
+    },
+    "settings.accessibility_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens app settings"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 App 设置"
+          }
+        }
+      }
+    },
+    "settings.placeholder.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferences and local data controls will appear here."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏好设置和本地数据管理之后会显示在这里。"
+          }
+        }
+      }
+    },
+    "settings.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置"
+          }
+        }
+      }
+    },
+    "today.empty.action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add the First Record"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加第一条记录"
+          }
+        }
+      }
+    },
+    "today.empty.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feeding, diaper, and sleep records will be organized by time."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "喂养、尿布和睡眠记录会按时间整理在这里。"
+          }
+        }
+      }
+    },
+    "today.empty.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Records Yet"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有记录"
+          }
+        }
+      }
+    },
+    "today.eyebrow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TODAY"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天"
+          }
+        }
+      }
+    },
+    "today.navigation_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天"
+          }
+        }
+      }
+    },
+    "today.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep everyday care simple and clear."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把每天的照护，简单清楚地记下来。"
+          }
+        }
+      }
+    },
+    "today.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Care at a Glance"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照护一目了然"
+          }
+        }
+      }
+    },
+    "一次安装，一个受信任成人" : {
+
+    },
+    "亲喂、吸奶和奶瓶可以分别选择。首页最多展示四个快捷入口，其余仍可从全局记录打开。" : {
+
+    },
+    "今天" : {
+
+    },
+    "今日" : {
+
+    },
+    "从上面的快捷入口开始，保存后会在这里形成统一时间线。" : {
+
+    },
+    "全部" : {
+
+    },
+    "几秒记录喂养、尿布和成长。无需账号或网络，数据保存在 App 中。" : {
+
+    },
+    "出生日期" : {
+
+    },
+    "历史记录" : {
+
+    },
+    "取消" : {
+
+    },
+    "头像可稍后添加" : {
+
+    },
+    "完成" : {
+
+    },
+    "左右侧与吸奶量属于当前受信任成人本人。确认表示你也是这些记录对应的哺乳者，不表示 App 已核验身份。" : {
+
+    },
+    "已选择" : {
+
+    },
+    "快速记录" : {
+
+    },
+    "怎么称呼宝宝？" : {
+
+    },
+    "成人哺乳信息需要独立确认" : {
+
+    },
+    "成长" : {
+
+    },
+    "我已阅读并单独同意" : {
+
+    },
+    "我的" : {
+
+    },
+    "无需注册也能在本机使用。任何能解锁设备和 App 的人都可能查看或修改当前安装中的数据。" : {
+
+    },
+    "暂时无法保存" : {
+
+    },
+    "未选择" : {
+
+    },
+    "本地保存" : {
+
+    },
+    "查看《儿童个人信息处理说明》" : {
+
+    },
+    "查看《成人哺乳与吸奶信息处理说明》" : {
+
+    },
+    "查看全部" : {
+
+    },
+    "正在打开本地资料" : {
+
+    },
+    "每一次照护，\n都值得被轻轻记住" : {
+
+    },
+    "添加第一条记录" : {
+
+    },
+    "生长参考分组" : {
+
+    },
+    "生长参考只用于显示国家标准参考带，不代替医生判断，也不会给宝宝贴‘正常/异常’标签。" : {
+
+    },
+    "用于匹配参考带" : {
+
+    },
+    "相册" : {
+
+    },
+    "知道了" : {
+
+    },
+    "第 %lld 步，共 %lld 步" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "第 %1$lld 步，共 %2$lld 步"
+          }
+        }
+      }
+    },
+    "记录" : {
+
+    },
+    "距离上次喂养" : {
+
+    },
+    "跳过介绍" : {
+
+    },
+    "跳过选择，使用推荐的四个入口" : {
+
+    },
+    "返回" : {
+
+    },
+    "还没有记录" : {
+
+    },
+    "这一天" : {
+
+    },
+    "这一天还没有照护记录" : {
+
+    },
+    "选择出生日期" : {
+
+    },
+    "默认私密 · 不含广告与公开动态" : {
+
+    }
+  },
+  "version" : "1.0"
+}
